@@ -1,7 +1,7 @@
 // server/router.rs
 
-use super::handler::{registration_handler, health_check, login_handler};
-use actix_web::{web, App, HttpServer};
+use crate::server::handler::{health_check, registration_handler};
+use actix_web::{web, App, HttpResponse, HttpServer};
 
 use dotenv::dotenv;
 use std::env;
@@ -17,9 +17,9 @@ pub async fn start_server() -> std::io::Result<()> {
 
     HttpServer::new(|| {
         App::new()
+            .default_service(web::route().to(HttpResponse::NotFound))
             .route("/health", web::get().to(health_check))
-            .route("/home", web::get().to(login_handler))
-            .route("/echo", web::post().to(registration_handler))
+            .route("/register", web::post().to(registration_handler))
     })
     .bind(server_address)?
     .run()
